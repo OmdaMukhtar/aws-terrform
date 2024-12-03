@@ -1,0 +1,89 @@
+Parameters:
+  NameOfTheService:
+    Description: The name of the service this tag to be used for.
+    Type: String 
+  KeyName: 
+    Description: Name of the existen keypair to enable ssh access to the server
+    Type: AWS::EC2::KeyPair::KeyName
+
+Mappings:
+  RegionMap:
+    us-east-1:
+      AMI: ami-0453ec754f44f9a4a
+    us-west-1:
+      AMI: ami-bf5540df
+    ap-southeast-1:
+      AMI: ami-3bfab942
+    ap-southeast-2:
+      AMI: ami-43874721
+      
+Resources:
+  MyEc2Instance:
+    Type : AWS::EC2::Instance
+    Metadata:
+      AWS::CloudFormation::Init:
+        config:
+          packages:
+            yum:
+              httpd: []
+          commands:
+            install_php:
+              command: !Sub |
+                sudo yum install -y php
+                # sudo systemctl enable --now httpd
+          files:
+            /var/www/html/index.php:
+              content: !Sub
+                <?php print "Hello Omda from cloud formation init!"; ?>
+              mode: '000644'
+              owner: apache
+              group: apache
+          services: 
+            sysvinit:
+              httpd:
+                enabled: true
+                ensureRunning: true
+                
+    Properties: 
+      ImageId: 
+        Fn::FindInMap:
+        - RegionMap
+        - !Ref AWS::Region
+        - AMI 
+      InstanceType: 't2.micro'
+      Tags:
+        - Key: "name"
+          Value: !Ref NameOfTheService
+      SecurityGroups:
+        - !Ref MySecurityGroup
+      KeyName: !Ref KeyName
+      UserData:
+        Fn::Base64: !Sub |
+          #!/bin/bash
+          # Ensure AWS CNF bootstrap is uptodate 
+          yum update -y
+
+          yum install -y aws-cfn-bootstrap
+
+          # Install the files and packges from the metadata secrion
+          /opt/aws/bin/cfn-init -v --stack ${AWS::StackName} --resource MyEc2Instance --region ${AWS::Region}
+
+  MySecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      GroupDescription: 'Enable SSH access via port 22 and 80'
+      SecurityGroupIngress:
+        - IpProtocol: TCP
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: 80
+          ToPort: 80
+          CidrIp: 0.0.0.0/0
+
+Outputs:
+  Website:
+    Description: Display the dns or url for the website
+    Value: !Sub 'http://${MyEc2Instance.PublicDnsName}'
+ 
