@@ -1,0 +1,27 @@
+Resources:
+  MyWaitConditionHandle:
+    Type: 'AWS::CloudFormation::WaitConditionHandle'
+
+  MyWaitCondition:
+    Type: 'AWS::CloudFormation::WaitCondition'
+    DependsOn: MyResource
+    Properties:
+      Handle: !Ref MyWaitConditionHandle
+      Timeout: '300'
+      Count: 1
+
+  MyResource:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      ImageId: 'ami-0453ec754f44f9a4a'
+      InstanceType: 't2.micro'
+      KeyName: 'my-key-pair'
+      UserData:
+        Fn::Base64: 
+          !Sub |
+            #!/bin/bash
+            yum update -y
+            # Simulate some configuration steps
+            sleep 180
+            # Send signal to WaitCondition
+            curl -X PUT -H 'Content-Type:' --data-binary '{"Status": "SUCCESS"}' '${MyWaitConditionHandle}'
