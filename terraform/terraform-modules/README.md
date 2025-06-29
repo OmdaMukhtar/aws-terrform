@@ -28,6 +28,8 @@ DynamoDB Table: terraform-backend-TerraformBackendDynamoDBTable-1VN5472I3FQAS
 ## Observation
 - WHen you want accessing the out variables of the resource or module , you must put it on 
 outputs file, then you'll be able to access it.
+- How to use the outputs between the modules proplery.
+
 
 ## Deploy
 - deploy terraform backend
