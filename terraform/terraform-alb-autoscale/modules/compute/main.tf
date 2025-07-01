@@ -1,7 +1,7 @@
 module "ec2_instance" {
   source  = "terraform-aws-modules/ec2-instance/aws"
 
-  name = "web-server"
+  name = "bastion-instance"
 
   instance_type = var.instance_type
   key_name      = var.key_name
@@ -9,7 +9,7 @@ module "ec2_instance" {
   subnet_id         = var.subnet
   
   ami = data.aws_ami.this.id
-  user_data       = file("${path.module}/scripts/user_data.sh")
+  # user_data       = file("${path.module}/scripts/user_data.sh")
   #user_data_base64 =   filebase64("${path.module}/scripts/user_data.sh")
   
   vpc_security_group_ids = var.security_group_ids
@@ -17,7 +17,7 @@ module "ec2_instance" {
   
   tags = {
     Terraform   = "true"
-    Environment = "dev"
+    Environment = "bastion"
   }
 }
 

@@ -1,9 +1,9 @@
 variable "instance_type" {
-  type = string
+  type    = string
   default = "t3.micro"
 }
 
 variable "key_name" {
-  type = string
+  type    = string
   default = "kali"
 }

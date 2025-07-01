@@ -26,6 +26,13 @@ module "vpc" {
 
   private_subnet_names = ["private-subnet-1", "private-subnet-2"]
   public_subnet_names  = ["public-subnet-1", "public-subnet-2"]
+  private_subnet_tags = {
+    Name = "private-subnet"
+  }
+
+  public_subnet_tags = {
+    Name = "public-subnet"
+  }
 
   # public_subnet_names omitted to show default name generation for all three subnets
 #   database_subnet_names    = ["DB Subnet One"]
