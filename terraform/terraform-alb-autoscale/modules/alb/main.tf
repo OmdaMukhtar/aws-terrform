@@ -12,6 +12,9 @@ module "alb" {
   vpc_id  = var.vpc_id
   subnets = var.public_subnets
 
+  # For testing purpose/enviroment 
+  enable_deletion_protection = false
+
   # Security Group
   security_group_ingress_rules = {
     all_http = {
@@ -32,8 +35,8 @@ module "alb" {
 
   listeners = {
     http = {
-      port                        = 80
-      protocol                    = "HTTP"
+      port     = 80
+      protocol = "HTTP"
 
       forward = {
         target_group_key = "webserver_target_groups"
@@ -44,7 +47,7 @@ module "alb" {
   target_groups = {
     webserver_target_groups = {
       backend_protocol                  = "HTTP"
-      backend_port                       = "80"
+      backend_port                      = "80"
       target_type                       = "instance"
       deregistration_delay              = 10
       load_balancing_cross_zone_enabled = true

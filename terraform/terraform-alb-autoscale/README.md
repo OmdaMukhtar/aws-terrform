@@ -23,6 +23,13 @@ so you have to use Bastion instance(deploy public ec2 instance in your network) 
         - open inbound for 80
         - open outboud for all traffic
 
-
+## Important Notes
+- change the health check type to ELB that will help the alb to check if the ec2 instance not working or not healthy
+immdialty will create another instance, but when you set  the health check type only check the ec2 instance event if the
+application is not healthy so will not give you an accurate result checking health.
+ 
+```sh
+health_check_type         = "ELB"
+```
 # After Deployment Success
 ![alt text](assets/image.png)
